@@ -9,7 +9,8 @@ const udpPort = new osc.UDPPort({
 });
 
 const DEBUG = true,
-  NUM_TRACKS = 8;
+  NUM_TRACKS = 8,
+  NUM_SCENES = 8;
 
 udpPort.open();
 
@@ -67,21 +68,18 @@ class ClipMatrix {
     this._matrix = [...Array(NUM_TRACKS)].map(()=>[]);
   }
 
-  getRandomPresentClip(timeout = 0) {
+  getRandomPresentClip() {
     let clip, prom, x, y;
 
-    prom = new Promise((res, rej) => {
+    prom = new Promise((resolve, reject) => {
       x = Math.floor(Math.random() * NUM_TRACKS);
-      y = Math.floor(Math.random() * NUM_TRACKS);
+      y = Math.floor(Math.random() * NUM_SCENES);
 
-      if (clip = this._matrix[x][y]) {
-        console.log("Clip found! resolving promise...");
-        res(x, y);
+      if (this._matrix[x][y]) {
+        resolve(x, y);
+      } else {
+        setTimeout(() => this.getRandomPresentClip().then(resolve), 150);
       }
-
-      setTimeout(() => {
-        this.getRandomPresentClip().then(res);
-      }, 150);
     });
 
     return prom;

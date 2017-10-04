@@ -71,18 +71,17 @@ class ClipMatrix {
     let clip, prom, x, y;
 
     prom = new Promise((res, rej) => {
-      x = Math.floor(Math.random()*8);
-      y = Math.floor(Math.random()*8);
-      clip = this._matrix[x][y]
+      x = Math.floor(Math.random() * NUM_TRACKS);
+      y = Math.floor(Math.random() * NUM_TRACKS);
 
-      if (clip) {
-        console.log("RESOLVING PROMISE");
+      if (clip = this._matrix[x][y]) {
+        console.log("Clip found! resolving promise...");
         res(x, y);
       }
 
       setTimeout(() => {
         this.getRandomPresentClip().then(res);
-      }, 100);
+      }, 150);
     });
 
     return prom;
@@ -92,16 +91,18 @@ class ClipMatrix {
     let match, scene, track, val;
     Object.keys(state).forEach(key => {
       if (match = this.clipPresence.exec(key)) {
-        val = !!state[key][0].value;
+        console.log("Clip found! State looks like: ");
+        console.log(state[key]);
 
         // JS matricies are zero indexed so we subtract one
         track = parseInt(match[1], 10) - 1;
         scene = parseInt(match[2], 10) - 1;
-        console.log("Clip found! State looks like: ");
-        console.log(state[key]);
+
         console.log("Track and scene are: ", track, scene);
         console.log("Clip matrix looks like: ");
         console.log(this._matrix);
+
+        val = !!state[key][0].value;
         this._matrix[track][scene] = val;
       }
     })

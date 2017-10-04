@@ -66,20 +66,28 @@ class ClipMatrix {
   constructor() {
     this._matrix = [...Array(NUM_TRACKS)].map(()=>[]);
   }
-  getRandomPresentClip() {
+
+  getRandomPresentClip(timeout = 0) {
     let clip, prom, x, y;
+
     prom = new Promise((res, rej) => {
       x = Math.floor(Math.random()*8);
       y = Math.floor(Math.random()*8);
       clip = this._matrix[x][y]
+
       if (clip) {
         console.log("RESOLVING PROMISE");
         res(x, y);
       }
-      setTimeout(this.getRandomPresentClip.bind(this), 20);
+
+      setTimeout(() => {
+        this.getRandomPresentClip().then(res);
+      }, 100);
     });
+
     return prom;
   }
+
   update(state) {
     let match, scene, track, val;
     Object.keys(state).forEach(key => {

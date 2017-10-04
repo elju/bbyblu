@@ -10,5 +10,8 @@
     "osc"
   ],
   "author": "ljulju",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "osc": "^2.2.0"
+  }
 }

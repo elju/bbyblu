@@ -1,5 +1,10 @@
 const osc = require('osc');
 
+const DEBUG = true;
+
+const NUM_SCENES = 8;
+const NUM_TRACKS = 8;
+
 const udpPort = new osc.UDPPort({
   localAddress: '127.0.0.1',
   localPort: 9000,
@@ -8,15 +13,11 @@ const udpPort = new osc.UDPPort({
   metadata: true
 });
 
-const DEBUG = true,
-  NUM_TRACKS = 8,
-  NUM_SCENES = 8;
-
 udpPort.open();
 
 udpPort.on('ready', function() {
   global.udpPort = udpPort;
-  global.bbyblu = new BbyBlu(udpPort);
+  const bbyblu = global.bbyblu = new BbyBlu(udpPort);
   bbyblu.play();
 });
 
@@ -39,11 +40,11 @@ class BbyBlu {
       address: `/track/${track + 1}/clip/${scene + 1}/launch`,
       args: []
     });
-  }
+  };
 
   processMessage(msg, info) {
     if (msg.address) {
-      this._state[msg.address] = msg.args
+      this._state[msg.address] = msg.args;
     }
   }
 
@@ -53,7 +54,6 @@ class BbyBlu {
 
   registerDebug() {
     this._port.socket.on('close', function() {
-      debugger;
       console.log('SOCKET CLOSED!');
     });
   }
@@ -65,11 +65,11 @@ class BbyBlu {
 
 class ClipMatrix {
   constructor() {
-    this._matrix = [...Array(NUM_TRACKS)].map(()=>[]);
+    this._matrix = [...Array(NUM_TRACKS)].map(() => []);
   }
 
   getRandomPresentClip() {
-    let clip, prom, x, y;
+    let prom, x, y;
 
     prom = new Promise((resolve, reject) => {
       x = Math.floor(Math.random() * NUM_TRACKS);
@@ -88,35 +88,35 @@ class ClipMatrix {
   update(state) {
     let match, scene, track, val;
     Object.keys(state).forEach(key => {
-      if (match = this.clipPresence.exec(key)) {
-        console.log("Clip found! State looks like: ");
+      if ((match = this.clipPresence.exec(key))) {
+        console.log('Clip found! State looks like: ');
         console.log(state[key]);
 
         // JS matricies are zero indexed so we subtract one
         track = parseInt(match[1], 10) - 1;
         scene = parseInt(match[2], 10) - 1;
 
-        console.log("Track and scene are: ", track, scene);
-        console.log("Clip matrix looks like: ");
+        console.log('Track and scene are: ', track, scene);
+        console.log('Clip matrix looks like: ');
         console.log(this._matrix);
 
         val = !!state[key][0].value;
         this._matrix[track][scene] = val;
       }
-    })
+    });
   }
 }
 
 ClipMatrix.prototype.clipPresence = /\/track\/(\d)\/clip\/(\d)\/hasContent/;
 
-toggleFactory = function(addr) {
+const toggleFactory = function(addr) {
   return function() {
     this._port.send({
       address: addr,
       args: []
     });
   };
-}
+};
 
 BbyBlu.prototype.play = toggleFactory('/play');
 BbyBlu.prototype.stop = toggleFactory('/stop');

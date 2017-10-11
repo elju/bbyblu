@@ -1,0 +1,10 @@
+{
+  "plugins": {
+    "es_modules": {},
+    "node": {}
+  },
+  "libs": [
+    "ecmascript"
+  ],
+  "ecmaVersion": 2017
+}

@@ -1,0 +1,11 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
+  "extends": "standard",
+  "rules": {
+    "semi": ["warn", "always"],
+    "space-before-function-paren": ["warn", "never"],
+    "no-cond-assign": ["warn", "except-parens"]
+  }
+}
